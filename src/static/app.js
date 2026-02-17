@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // Build participants list HTML
         const participantsList = details.participants.length > 0
-          ? `<ul class="participants-list">${details.participants.map(p => `<li>${p}</li>`).join('')}</ul>`
+          ? `<ul class="participants-list">${details.participants.map(p => `<li><span class="participant-email">${p}</span><button class="delete-participant" data-activity="${name}" data-email="${p}" title="Remove participant">×</button></li>`).join('')}</ul>`
           : '<p class="no-participants"><em>No participants yet</em></p>';
 
         activityCard.innerHTML = `
@@ -37,6 +37,35 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
 
         activitiesList.appendChild(activityCard);
+
+        // Add click handlers for delete buttons
+        activityCard.querySelectorAll(".delete-participant").forEach(button => {
+          button.addEventListener("click", async (event) => {
+            event.preventDefault();
+            const activityName = button.getAttribute("data-activity");
+            const participantEmail = button.getAttribute("data-email");
+
+            if (confirm(`Remove ${participantEmail} from ${activityName}?`)) {
+              try {
+                const response = await fetch(
+                  `/activities/${encodeURIComponent(activityName)}/unregister?email=${encodeURIComponent(participantEmail)}`,
+                  { method: "DELETE" }
+                );
+
+                if (response.ok) {
+                  // Refresh activities list
+                  fetchActivities();
+                } else {
+                  const result = await response.json();
+                  alert(result.detail || "Failed to remove participant");
+                }
+              } catch (error) {
+                alert("Error removing participant");
+                console.error("Error:", error);
+              }
+            }
+          });
+        });
 
         // Add option to select dropdown
         const option = document.createElement("option");
@@ -71,6 +100,8 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
+        // Refresh activities list to show new participant
+        fetchActivities();
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
         messageDiv.className = "error";

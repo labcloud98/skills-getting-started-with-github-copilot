@@ -153,19 +153,34 @@ button:hover {
 }
 
 .participants-list li {
-  padding: 6px 0;
-  padding-left: 20px;
-  position: relative;
+  padding: 8px 0;
   font-size: 14px;
   color: #555;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.participants-list li:before {
-  content: "•";
-  color: #1a237e;
-  font-weight: bold;
-  position: absolute;
-  left: 0;
+.participant-email {
+  flex: 1;
+}
+
+.delete-participant {
+  background-color: #ff5252;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  min-width: 32px;
+  transition: background-color 0.2s;
+  margin-left: 10px;
+}
+
+.delete-participant:hover {
+  background-color: #ff1744;
 }
 
 .no-participants {
